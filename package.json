@@ -1,0 +1,29 @@
+{
+  "name": "clickflare-api-integration",
+  "version": "1.0.0",
+  "description": "ClickFlare API integration for uploading online conversions",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/examples/upload-conversion.js",
+    "dev": "ts-node src/examples/upload-conversion.ts"
+  },
+  "keywords": [
+    "clickflare",
+    "conversion",
+    "tracking",
+    "api"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.6.2",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.4",
+    "typescript": "^5.3.3",
+    "ts-node": "^10.9.2"
+  }
+}
