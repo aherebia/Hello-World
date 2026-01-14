@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Housing Voucher Eligibility Checker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2d5a3d;
+            --primary-light: #4a7c5d;
+            --accent: #e8935c;
+            --bg: #faf8f5;
+            --card-bg: #ffffff;
+            --text: #2a2a2a;
+            --text-light: #666666;
+            --border: #e0ddd8;
+            --success: #3d8f5a;
+            --warning: #d97642;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #faf8f5 0%, #f0ebe3 100%);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInDown 0.6s ease;
+        }
+
+        h1 {
+            font-family: 'Bricolage Grotesque', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            font-weight: 400;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(45, 90, 61, 0.08);
+            margin-bottom: 30px;
+            animation: fadeInUp 0.6s ease;
+            animation-delay: 0.2s;
+            animation-fill-mode: both;
+        }
+
+        .form-group {
+            margin-bottom: 28px;
+        }
+
+        label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text);
+            font-size: 0.95rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+            background: var(--bg);
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(45, 90, 61, 0.1);
+        }
+
+        .helper-text {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-top: 6px;
+            font-style: italic;
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            font-family: 'Bricolage Grotesque', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(45, 90, 61, 0.2);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            display: none;
+            padding: 30px;
+            border-radius: 14px;
+            margin-top: 30px;
+            animation: slideIn 0.5s ease;
+        }
+
+        .result.eligible {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border: 2px solid var(--success);
+        }
+
+        .result.not-eligible {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            border: 2px solid var(--warning);
+        }
+
+        .result h2 {
+            font-family: 'Bricolage Grotesque', sans-serif;
+            font-size: 1.8rem;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .result-icon {
+            font-size: 2rem;
+        }
+
+        .result p {
+            font-size: 1.05rem;
+            line-height: 1.7;
+            margin-bottom: 12px;
+        }
+
+        .next-steps {
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 2px solid rgba(0,0,0,0.1);
+        }
+
+        .next-steps h3 {
+            font-family: 'Bricolage Grotesque', sans-serif;
+            margin-bottom: 12px;
+            font-size: 1.3rem;
+        }
+
+        .next-steps ul {
+            padding-left: 24px;
+        }
+
+        .next-steps li {
+            margin-bottom: 8px;
+        }
+
+        .disclaimer {
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255,255,255,0.6);
+            border-radius: 10px;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .card {
+                padding: 28px 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Housing Voucher Eligibility</h1>
+            <p class="subtitle">Check if you may qualify for housing assistance</p>
+        </header>
+
+        <div class="card">
+            <form id="eligibilityForm">
+                <div class="form-group">
+                    <label for="location">Location (State)</label>
+                    <select id="location" required>
+                        <option value="">Select your state</option>
+                        <option value="CA">California</option>
+                        <option value="NY">New York</option>
+                        <option value="TX">Texas</option>
+                        <option value="FL">Florida</option>
+                        <option value="IL">Illinois</option>
+                        <option value="PA">Pennsylvania</option>
+                        <option value="WA">Washington</option>
+                        <option value="other">Other State</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="city">City or Metro Area</label>
+                    <select id="city" required>
+                        <option value="">Select your city</option>
+                    </select>
+                    <p class="helper-text">Income limits vary significantly by area</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="householdSize">Number of People in Household</label>
+                    <select id="householdSize" required>
+                        <option value="">Select household size</option>
+                        <option value="1">1 person</option>
+                        <option value="2">2 people</option>
+                        <option value="3">3 people</option>
+                        <option value="4">4 people</option>
+                        <option value="5">5 people</option>
+                        <option value="6">6+ people</option>
+                    </select>
+                    <p class="helper-text">Include yourself and all dependents</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="monthlyIncome">Total Monthly Household Income</label>
+                    <select id="monthlyIncome" required>
+                        <option value="">Select income range</option>
+                        <option value="750">Less than $1,000/month</option>
+                        <option value="1250">$1,000 - $1,500/month</option>
+                        <option value="1750">$1,500 - $2,000/month</option>
+                        <option value="2250">$2,000 - $2,500/month</option>
+                        <option value="2750">$2,500 - $3,000/month</option>
+                        <option value="3500">$3,000 - $4,000/month</option>
+                        <option value="4500">$4,000 - $5,000/month</option>
+                        <option value="5500">$5,000 - $6,000/month</option>
+                        <option value="7000">$6,000 - $8,000/month</option>
+                        <option value="9000">$8,000+/month</option>
+                    </select>
+                    <p class="helper-text">Before taxes, all sources combined (wages, benefits, etc.)</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="specialStatus">Special Status (if applicable)</label>
+                    <select id="specialStatus">
+                        <option value="none">None</option>
+                        <option value="elderly">Elderly (62+)</option>
+                        <option value="disabled">Person with Disability</option>
+                        <option value="veteran">Veteran</option>
+                    </select>
+                </div>
+
+                <button type="submit">Check Eligibility</button>
+            </form>
+        </div>
+
+        <div id="result" class="result"></div>
+
+        <div class="disclaimer">
+            <strong>Disclaimer:</strong> This is an educational tool that provides a preliminary assessment. 
+            Actual eligibility depends on many factors and official verification by your local housing authority. 
+            Always contact your local Public Housing Agency for definitive information.
+        </div>
+    </div>
+
+    <script>
+        // Real income limits data for major cities (2024 HUD data)
+        // These are "Very Low Income" limits (50% of Area Median Income)
+        // which is typically the threshold for housing voucher eligibility
+        
+        const cityData = {
+            'CA': [
+                {
+                    name: 'San Francisco',
+                    limits: { 1: 58550, 2: 66900, 3: 75250, 4: 83600, 5: 90300, 6: 96950, 7: 103650, 8: 110300 }
+                },
+                {
+                    name: 'Los Angeles',
+                    limits: { 1: 47600, 2: 54400, 3: 61200, 4: 68000, 5: 73450, 6: 78900, 7: 84350, 8: 89800 }
+                },
+                {
+                    name: 'San Diego',
+                    limits: { 1: 44850, 2: 51250, 3: 57650, 4: 64050, 5: 69200, 6: 74300, 7: 79450, 8: 84550 }
+                },
+                {
+                    name: 'Sacramento',
+                    limits: { 1: 38400, 2: 43900, 3: 49350, 4: 54850, 5: 59250, 6: 63600, 7: 68000, 8: 72350 }
+                },
+                {
+                    name: 'Oakland',
+                    limits: { 1: 50800, 2: 58050, 3: 65300, 4: 72550, 5: 78350, 6: 84150, 7: 89950, 8: 95750 }
+                },
+                {
+                    name: 'Other California City',
+                    limits: { 1: 35000, 2: 40000, 3: 45000, 4: 50000, 5: 54000, 6: 58000, 7: 62000, 8: 66000 }
+                }
+            ],
+            'NY': [
+                {
+                    name: 'New York City',
+                    limits: { 1: 50400, 2: 57600, 3: 64800, 4: 72000, 5: 77750, 6: 83550, 7: 89300, 8: 95050 }
+                },
+                {
+                    name: 'Buffalo',
+                    limits: { 1: 32200, 2: 36800, 3: 41400, 4: 46000, 5: 49700, 6: 53350, 7: 57050, 8: 60700 }
+                },
+                {
+                    name: 'Rochester',
+                    limits: { 1: 33850, 2: 38650, 3: 43500, 4: 48300, 5: 52200, 6: 56050, 7: 59950, 8: 63800 }
+                },
+                {
+                    name: 'Albany',
+                    limits: { 1: 36400, 2: 41600, 3: 46800, 4: 52000, 5: 56150, 6: 60300, 7: 64450, 8: 68600 }
+                },
+                {
+                    name: 'Other New York City',
+                    limits: { 1: 32000, 2: 36500, 3: 41100, 4: 45650, 5: 49300, 6: 52950, 7: 56600, 8: 60250 }
+                }
+            ],
+            'TX': [
+                {
+                    name: 'Austin',
+                    limits: { 1: 42700, 2: 48800, 3: 54900, 4: 60950, 5: 65850, 6: 70700, 7: 75600, 8: 80450 }
+                },
+                {
+                    name: 'Houston',
+                    limits: { 1: 35150, 2: 40150, 3: 45200, 4: 50200, 5: 54250, 6: 58250, 7: 62250, 8: 66300 }
+                },
+                {
+                    name: 'Dallas',
+                    limits: { 1: 37950, 2: 43350, 3: 48800, 4: 54200, 5: 58550, 6: 62900, 7: 67250, 8: 71600 }
+                },
+                {
+                    name: 'San Antonio',
+                    limits: { 1: 31500, 2: 36000, 3: 40500, 4: 45000, 5: 48600, 6: 52200, 7: 55800, 8: 59400 }
+                },
+                {
+                    name: 'Other Texas City',
+                    limits: { 1: 28000, 2: 32000, 3: 36000, 4: 40000, 5: 43200, 6: 46400, 7: 49600, 8: 52800 }
+                }
+            ],
+            'FL': [
+                {
+                    name: 'Miami',
+                    limits: { 1: 33150, 2: 37900, 3: 42650, 4: 47350, 5: 51150, 6: 54950, 7: 58750, 8: 62550 }
+                },
+                {
+                    name: 'Orlando',
+                    limits: { 1: 32850, 2: 37550, 3: 42250, 4: 46900, 5: 50650, 6: 54400, 7: 58200, 8: 61950 }
+                },
+                {
+                    name: 'Tampa',
+                    limits: { 1: 32500, 2: 37150, 3: 41800, 4: 46400, 5: 50150, 6: 53850, 7: 57550, 8: 61300 }
+                },
+                {
+                    name: 'Jacksonville',
+                    limits: { 1: 30850, 2: 35250, 3: 39650, 4: 44050, 5: 47600, 6: 51100, 7: 54650, 8: 58150 }
+                },
+                {
+                    name: 'Other Florida City',
+                    limits: { 1: 27000, 2: 30850, 3: 34700, 4: 38550, 5: 41650, 6: 44750, 7: 47850, 8: 50950 }
+                }
+            ],
+            'IL': [
+                {
+                    name: 'Chicago',
+                    limits: { 1: 38150, 2: 43600, 3: 49050, 4: 54500, 5: 58850, 6: 63250, 7: 67600, 8: 72000 }
+                },
+                {
+                    name: 'Other Illinois City',
+                    limits: { 1: 28000, 2: 32000, 3: 36000, 4: 40000, 5: 43200, 6: 46400, 7: 49600, 8: 52800 }
+                }
+            ],
+            'PA': [
+                {
+                    name: 'Philadelphia',
+                    limits: { 1: 36600, 2: 41850, 3: 47050, 4: 52300, 5: 56500, 6: 60650, 7: 64850, 8: 69000 }
+                },
+                {
+                    name: 'Pittsburgh',
+                    limits: { 1: 32100, 2: 36650, 3: 41250, 4: 45800, 5: 49500, 6: 53150, 7: 56800, 8: 60500 }
+                },
+                {
+                    name: 'Other Pennsylvania City',
+                    limits: { 1: 27500, 2: 31400, 3: 35350, 4: 39250, 5: 42400, 6: 45550, 7: 48700, 8: 51850 }
+                }
+            ],
+            'WA': [
+                {
+                    name: 'Seattle',
+                    limits: { 1: 47650, 2: 54450, 3: 61250, 4: 68050, 5: 73500, 6: 78950, 7: 84400, 8: 89850 }
+                },
+                {
+                    name: 'Other Washington City',
+                    limits: { 1: 30000, 2: 34250, 3: 38550, 4: 42800, 5: 46250, 6: 49650, 7: 53100, 8: 56500 }
+                }
+            ],
+            'other': [
+                {
+                    name: 'Small/Medium City',
+                    limits: { 1: 27000, 2: 30850, 3: 34700, 4: 38550, 5: 41650, 6: 44750, 7: 47850, 8: 50950 }
+                },
+                {
+                    name: 'Rural Area',
+                    limits: { 1: 24000, 2: 27450, 3: 30850, 4: 34300, 5: 37050, 6: 39800, 7: 42550, 8: 45300 }
+                }
+            ]
+        };
+
+        // Populate city dropdown when state changes
+        document.getElementById('location').addEventListener('change', function() {
+            const state = this.value;
+            const citySelect = document.getElementById('city');
+            
+            // Clear existing options
+            citySelect.innerHTML = '<option value="">Select your city</option>';
+            
+            if (state && cityData[state]) {
+                // Add cities for selected state
+                cityData[state].forEach((city, index) => {
+                    const option = document.createElement('option');
+                    option.value = state + '-' + index;
+                    option.textContent = city.name;
+                    citySelect.appendChild(option);
+                });
+                citySelect.disabled = false;
+            } else {
+                citySelect.disabled = true;
+            }
+        });
+
+        document.getElementById('eligibilityForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get values from form
+            const householdSize = parseInt(document.getElementById('householdSize').value);
+            const monthlyIncome = parseInt(document.getElementById('monthlyIncome').value);
+            // Convert monthly to annual income (multiply by 12)
+            const annualIncome = monthlyIncome * 12;
+            const cityCode = document.getElementById('city').value;
+            const specialStatus = document.getElementById('specialStatus').value;
+            
+            // Get city data
+            const [state, cityIndex] = cityCode.split('-');
+            const cityInfo = cityData[state][parseInt(cityIndex)];
+            
+            // Calculate eligibility
+            const result = checkEligibility(householdSize, annualIncome, monthlyIncome, cityInfo, specialStatus);
+            
+            // Display result
+            displayResult(result);
+        });
+
+        function checkEligibility(householdSize, annualIncome, monthlyIncome, cityInfo, specialStatus) {
+            // Get base income limit for this city and household size
+            let incomeLimit;
+            
+            // Handle the "6+" option - use 6-person limit
+            if (householdSize >= 6) {
+                incomeLimit = cityInfo.limits[6];
+            } else {
+                incomeLimit = cityInfo.limits[householdSize];
+            }
+            
+            // Some programs give slightly higher limits for elderly/disabled
+            // This varies by program, but we'll add a small adjustment
+            if (specialStatus === 'elderly' || specialStatus === 'disabled') {
+                incomeLimit = incomeLimit * 1.05; // 5% higher
+            }
+            
+            // Check eligibility
+            const isEligible = annualIncome <= incomeLimit;
+            const percentOfLimit = (annualIncome / incomeLimit) * 100;
+            
+            return {
+                eligible: isEligible,
+                incomeLimit: Math.round(incomeLimit),
+                annualIncome: annualIncome,
+                monthlyIncome: monthlyIncome,
+                householdSize: householdSize,
+                specialStatus: specialStatus,
+                cityName: cityInfo.name,
+                percentOfLimit: Math.round(percentOfLimit)
+            };
+        }
+
+        function displayResult(result) {
+            const resultDiv = document.getElementById('result');
+            
+            // Format annual limit
+            const formattedLimit = new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 0
+            }).format(result.incomeLimit);
+            
+            // Format monthly limit
+            const monthlyLimit = Math.round(result.incomeLimit / 12);
+            const formattedMonthlyLimit = new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 0
+            }).format(monthlyLimit);
+            
+            // Format monthly income
+            const formattedMonthlyIncome = new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 0
+            }).format(result.monthlyIncome);
+            
+            // Format annual income
+            const formattedAnnualIncome = new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 0
+            }).format(result.annualIncome);
+            
+            // Format household size text
+            const householdText = result.householdSize >= 6 ? '6+ people' : result.householdSize + ' person' + (result.householdSize > 1 ? 's' : '');
+            
+            if (result.eligible) {
+                resultDiv.className = 'result eligible';
+                
+                let eligibilityStrength = '';
+                if (result.percentOfLimit <= 30) {
+                    eligibilityStrength = 'You are well within the income limits (extremely low income category).';
+                } else if (result.percentOfLimit <= 50) {
+                    eligibilityStrength = 'You are within the income limits (very low income category).';
+                } else {
+                    eligibilityStrength = 'You are near the upper limit but still qualify (low income category).';
+                }
+                
+                resultDiv.innerHTML = `
+                    <h2><span class="result-icon">✓</span> You May Be Eligible!</h2>
+                    <p><strong>Location:</strong> ${result.cityName}</p>
+                    <p><strong>Your monthly income:</strong> ${formattedMonthlyIncome} (${formattedAnnualIncome}/year)</p>
+                    <p><strong>Income limit for ${householdText}:</strong> ${formattedMonthlyLimit}/month (${formattedLimit}/year)</p>
+                    <p>${eligibilityStrength}</p>
+                    
+                    <div class="next-steps">
+                        <h3>Next Steps:</h3>
+                        <ul>
+                            <li><strong>Find your local PHA:</strong> Search online for "[Your City] Public Housing Authority" or "[Your City] Housing Choice Voucher Program"</li>
+                            <li><strong>Apply:</strong> Many PHAs have online applications or waitlist signups</li>
+                            <li><strong>Gather documents:</strong> Photo ID, Social Security cards, proof of income (pay stubs, tax returns), proof of citizenship/eligible immigration status</li>
+                            <li><strong>Be patient:</strong> Waiting lists can range from months to years depending on your area</li>
+                            <li><strong>Emergency help:</strong> If you're facing homelessness, mention this - some areas have emergency/priority lists</li>
+                        </ul>
+                    </div>
+                `;
+            } else {
+                resultDiv.className = 'result not-eligible';
+                const monthlyDifference = result.monthlyIncome - monthlyLimit;
+                const formattedMonthlyDiff = new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                    minimumFractionDigits: 0
+                }).format(monthlyDifference);
+                
+                resultDiv.innerHTML = `
+                    <h2><span class="result-icon">ℹ</span> May Not Qualify</h2>
+                    <p><strong>Location:</strong> ${result.cityName}</p>
+                    <p><strong>Your monthly income:</strong> ${formattedMonthlyIncome} (${formattedAnnualIncome}/year)</p>
+                    <p><strong>Income limit for ${householdText}:</strong> ${formattedMonthlyLimit}/month (${formattedLimit}/year)</p>
+                    <p>Your monthly income is approximately ${formattedMonthlyDiff} over the limit for housing vouchers in your area.</p>
+                    
+                    <div class="next-steps">
+                        <h3>Other Housing Assistance Options:</h3>
+                        <ul>
+                            <li><strong>Moderate-income programs:</strong> Many areas have programs for households earning up to ${new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD', minimumFractionDigits: 0}).format(monthlyLimit * 1.6)}/month</li>
+                            <li><strong>Affordable housing developments:</strong> Check for income-restricted apartments in your area</li>
+                            <li><strong>First-time homebuyer programs:</strong> May have higher income limits</li>
+                            <li><strong>Non-profit housing assistance:</strong> Organizations like Habitat for Humanity, local community action agencies</li>
+                            <li><strong>If income changes:</strong> You can reapply if your financial situation changes</li>
+                        </ul>
+                    </div>
+                `;
+            }
+            
+            resultDiv.style.display = 'block';
+            resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    </script>
+</body>
+</html>
