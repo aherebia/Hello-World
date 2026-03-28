@@ -56,18 +56,19 @@ async function fetchCampaignReport() {
 
     if (!result.success) {
       console.error('Report fetch failed:', result.message);
+      console.error('Make sure IP whitelisting is disabled or your IP is allowed in Settings > Security > API Access');
       process.exit(1);
     }
 
-    const rows: any[] = result.data?.data ?? result.data?.rows ?? result.data ?? [];
+    const items = result.data?.items ?? [];
 
-    if (!Array.isArray(rows) || rows.length === 0) break;
+    if (!Array.isArray(items) || items.length === 0) break;
 
-    allRows.push(...rows);
-    totalRows += rows.length;
+    allRows.push(...items);
+    totalRows += items.length;
 
     // Stop if fewer rows than pageSize (last page)
-    if (rows.length < (request.pageSize ?? 100)) break;
+    if (items.length < (request.pageSize ?? 100)) break;
 
     page++;
   }
@@ -82,9 +83,9 @@ async function fetchCampaignReport() {
   console.log('-'.repeat(92));
 
   for (const row of allRows) {
-    const id = String(row.campaignID ?? row.campaign_id ?? '').padEnd(20);
-    const name = String(row.campaignName ?? row.campaign_name ?? '').padEnd(40);
-    const tf4 = String(row.trackingField4 ?? row.tracking_field_4 ?? '').padEnd(30);
+    const id = String(row.campaignID ?? '').padEnd(20);
+    const name = String(row.campaignName ?? '').padEnd(40);
+    const tf4 = String(row.trackingField4 ?? '').padEnd(30);
     console.log(`${id} ${name} ${tf4}`);
   }
 

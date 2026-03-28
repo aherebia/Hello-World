@@ -12,4 +12,6 @@ export {
   ConversionResponse,
   ReportRequest,
   ReportResponse,
+  ReportData,
+  ReportItem,
 } from './types';

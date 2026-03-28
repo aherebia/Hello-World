@@ -122,7 +122,39 @@ export interface ReportRequest {
 export interface ReportResponse {
   success: boolean;
   message?: string;
-  data?: any;
+  data?: ReportData;
+}
+
+/**
+ * Report data structure from API
+ */
+export interface ReportData {
+  /**
+   * Array of report rows with metrics
+   */
+  items: ReportItem[];
+
+  /**
+   * Totals across all rows
+   */
+  totals: Record<string, number>;
+
+  /**
+   * Comparison data (if compare parameter was used)
+   */
+  compare?: Record<string, number[]>;
+
+  /**
+   * Comparison totals (if compare parameter was used)
+   */
+  compareTotals?: Record<string, number>;
+}
+
+/**
+ * Individual report row
+ */
+export interface ReportItem {
+  [metric: string]: number | string;
 }
 
 /**
