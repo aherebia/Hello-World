@@ -12,7 +12,7 @@ import {
  * ClickFlare API Client for uploading online conversions and fetching reports
  */
 export class ClickFlareClient {
-  private config: Required<ClickFlareConfig>;
+  private config: Required<Omit<ClickFlareConfig, 'apiKey'>> & { apiKey?: string };
   private httpClient: AxiosInstance;
   private baseUrl: string;
   private apiBaseUrl: string;
