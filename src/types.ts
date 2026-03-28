@@ -32,39 +32,49 @@ export interface ClickFlareConfig {
  */
 export interface ReportRequest {
   /**
-   * Start date in YYYY-MM-DD format
+   * Start date in ISO 8601 format
    */
-  dateFrom: string;
+  startDate: string;
 
   /**
-   * End date in YYYY-MM-DD format
+   * End date in ISO 8601 format
    */
-  dateTo: string;
+  endDate: string;
 
   /**
-   * Fields to group the report by (must also be included in columns)
+   * Fields to group the report by (must also be included in metrics)
    */
   groupBy: string[];
 
   /**
-   * Columns/metrics to include in the report
+   * Metrics/columns to include in the report
    */
-  columns: string[];
+  metrics: string[];
 
   /**
-   * Optional filters to narrow the report
-   */
-  filters?: Record<string, string | string[]>;
-
-  /**
-   * Timezone for the report (default: UTC)
+   * Timezone for the report (e.g., 'America/New_York')
    */
   timezone?: string;
 
   /**
-   * Currency for monetary values (default: USD)
+   * Sort by field
+   */
+  sortBy?: string;
+
+  /**
+   * Sort order: 'asc' or 'desc'
+   */
+  orderType?: 'asc' | 'desc';
+
+  /**
+   * Currency for monetary values (e.g., 'USD', 'EUR')
    */
   currency?: string;
+
+  /**
+   * Page number for pagination (default: 1)
+   */
+  page?: number;
 
   /**
    * Number of results per page (default: 100)
@@ -72,9 +82,38 @@ export interface ReportRequest {
   pageSize?: number;
 
   /**
-   * Page number for pagination (default: 1)
+   * Search string
    */
-  page?: number;
+  search?: string;
+
+  /**
+   * Include all results
+   */
+  includeAll?: boolean;
+
+  /**
+   * Filters for metrics
+   */
+  metricsFilters?: Array<{
+    name: string;
+    operator: string;
+    value: string[];
+  }>;
+
+  /**
+   * Comparison metrics
+   */
+  compare?: string[];
+
+  /**
+   * Conversion timestamp type: 'visit' or other
+   */
+  conversionTimestamp?: string;
+
+  /**
+   * Workspace IDs to filter by
+   */
+  workspace_ids?: string[];
 }
 
 /**

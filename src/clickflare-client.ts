@@ -26,14 +26,14 @@ export class ClickFlareClient {
 
     const protocol = this.config.useHttps ? 'https' : 'http';
     this.baseUrl = `${protocol}://${this.config.trackerDomain}`;
-    this.apiBaseUrl = `${protocol}://${this.config.trackerDomain}`;
+    this.apiBaseUrl = 'https://public-api.clickflare.io';
 
     this.httpClient = axios.create({
       timeout: this.config.timeout,
       validateStatus: () => true,
       headers: {
         'Content-Type': 'application/json',
-        ...(this.config.apiKey ? { 'Api-Key': this.config.apiKey } : {}),
+        ...(this.config.apiKey ? { 'api-key': this.config.apiKey } : {}),
       },
     });
   }

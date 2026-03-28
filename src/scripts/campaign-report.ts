@@ -27,25 +27,23 @@ async function fetchCampaignReport() {
   });
 
   // Date range: last 365 days
-  const dateTo = new Date();
-  const dateFrom = new Date();
-  dateFrom.setFullYear(dateFrom.getFullYear() - 1);
-
-  const formatDate = (d: Date) => d.toISOString().split('T')[0];
+  const endDate = new Date();
+  const startDate = new Date();
+  startDate.setFullYear(startDate.getFullYear() - 1);
 
   const request: ReportRequest = {
-    dateFrom: formatDate(dateFrom),
-    dateTo: formatDate(dateTo),
+    startDate: startDate.toISOString(),
+    endDate: endDate.toISOString(),
     groupBy: ['campaignID', 'trackingField4'],
-    columns: ['campaignID', 'campaignName', 'trackingField4'],
-    timezone: process.env.CLICKFLARE_TIMEZONE || 'UTC',
+    metrics: ['campaignID', 'campaignName', 'trackingField4'],
+    timezone: process.env.CLICKFLARE_TIMEZONE || 'America/New_York',
     currency: process.env.CLICKFLARE_CURRENCY || 'USD',
     pageSize: 100,
     page: 1,
   };
 
   console.log('Fetching ClickFlare campaign report...');
-  console.log(`Date range: ${request.dateFrom} → ${request.dateTo}`);
+  console.log(`Date range: ${request.startDate} → ${request.endDate}`);
   console.log(`Grouped by: ${request.groupBy.join(', ')}\n`);
 
   let page = 1;
