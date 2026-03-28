@@ -12,6 +12,11 @@ export interface ClickFlareConfig {
   trackerDomain: string;
 
   /**
+   * ClickFlare API key (from Settings > Security > API Access)
+   */
+  apiKey?: string;
+
+  /**
    * Use HTTPS for API requests (default: true)
    */
   useHttps?: boolean;
@@ -20,6 +25,65 @@ export interface ClickFlareConfig {
    * Request timeout in milliseconds (default: 10000)
    */
   timeout?: number;
+}
+
+/**
+ * Request body for POST /api/report
+ */
+export interface ReportRequest {
+  /**
+   * Start date in YYYY-MM-DD format
+   */
+  dateFrom: string;
+
+  /**
+   * End date in YYYY-MM-DD format
+   */
+  dateTo: string;
+
+  /**
+   * Fields to group the report by (must also be included in columns)
+   */
+  groupBy: string[];
+
+  /**
+   * Columns/metrics to include in the report
+   */
+  columns: string[];
+
+  /**
+   * Optional filters to narrow the report
+   */
+  filters?: Record<string, string | string[]>;
+
+  /**
+   * Timezone for the report (default: UTC)
+   */
+  timezone?: string;
+
+  /**
+   * Currency for monetary values (default: USD)
+   */
+  currency?: string;
+
+  /**
+   * Number of results per page (default: 100)
+   */
+  pageSize?: number;
+
+  /**
+   * Page number for pagination (default: 1)
+   */
+  page?: number;
+}
+
+/**
+ * Response from POST /api/report
+ */
+export interface ReportResponse {
+  success: boolean;
+  message?: string;
+  data?: any;
 }
 
 /**

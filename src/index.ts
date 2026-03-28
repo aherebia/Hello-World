@@ -10,4 +10,6 @@ export {
   Conversion,
   BatchConversion,
   ConversionResponse,
+  ReportRequest,
+  ReportResponse,
 } from './types';
